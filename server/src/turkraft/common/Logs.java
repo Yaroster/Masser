@@ -4,65 +4,54 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
-
 import org.fusesource.jansi.Ansi;
-
 import turkraft.Turkraft;
 
-public class Logs
-{
-	public void log(String file, String text)
-	{
+// This class handles logging functionalities.
+public class Logs {
+	// Basic logging method.
+	public void log(String file, String text) {
 		this.log(file, text, Turkraft.DEBUG);
 	}
-	
-	public void log(String file, String text, boolean debug)
-	{
-		if (!debug)
-		{
-			return;
+
+	// Overloaded logging method with a debug flag.
+	public void log(String file, String text, boolean debug) {
+		if (!debug) {
+			return; // Do not log if debug is false.
 		}
-		
-		try
-		{
+
+		try {
 			FileWriter writer = new FileWriter("logs/" + file + ".txt", true);
-			
 			BufferedWriter output = new BufferedWriter(writer);
-			
-			output.write("[" + new Date() + "] " + text + "\r\n");
-		
+
+			output.write("[" + new Date() + "] " + text + "\r\n"); // Write log entry with timestamp.
 			output.flush();
-			
-			output.close(); 
-		}
-		catch (IOException ex)
-		{
-			ex.printStackTrace();
+			output.close();
+		} catch (IOException ex) {
+			ex.printStackTrace(); // Print stack trace for IOException.
 		}
 	}
-	public void information(String text)
-	{
+
+	// Method to log informational messages.
+	public void information(String text) {
 		this.log("informations", text, true);
 	}
-	
-	public void error(String text)
-	{
-		System.out.print(Ansi.ansi().fg(Ansi.Color.RED).bold().toString() + text + Ansi.ansi().fg(Ansi.Color.WHITE).boldOff().toString());
-		
-		this.log("errors", text, true);
+
+	// Method to log error messages.
+	public void error(String text) {
+		System.out.print(Ansi.ansi().fg(Ansi.Color.RED).bold().toString() + text + Ansi.ansi().fg(Ansi.Color.WHITE).boldOff().toString()); // Print error in red color.
+		this.log("errors", text, true); // Log the error.
 	}
-	
-	public void error(Exception exception)
-	{
-		exception.printStackTrace();
-		
-		this.error(exception.toString());
+
+	// Method to log exceptions.
+	public void error(Exception exception) {
+		exception.printStackTrace(); // Print stack trace.
+		this.error(exception.toString()); // Log the exception.
 	}
-	
-	public void error(String text, Exception exception)
-	{
-		this.error("[" + text + "] " + exception.toString());
-		
-		exception.printStackTrace();
+
+	// Method to log errors with additional text.
+	public void error(String text, Exception exception) {
+		this.error("[" + text + "] " + exception.toString()); // Log the error with additional text.
+		exception.printStackTrace(); // Print stack trace.
 	}
 }
