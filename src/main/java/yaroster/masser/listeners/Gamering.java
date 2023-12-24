@@ -1,7 +1,6 @@
 package yaroster.masser.listeners;
 
-import net.minecraft.server.v1_6_R2.EntityPlayer;
-
+import net.minecraft.server.v1_4_6.BlockContainer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
