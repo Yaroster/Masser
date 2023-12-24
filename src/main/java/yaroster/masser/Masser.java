@@ -31,7 +31,7 @@ public class Masser extends JavaPlugin
 	public static String VERSION = "0.4.2";
 	
 	private Map<String, Gamer> gamers;
-
+	private final Player[] players = getServer().getOnlinePlayers().toArray(new Player[0]);
 	public Map<Location, Shop> shops;
 	
 	public ArrayList<Integer> deleteShops;
@@ -1718,9 +1718,9 @@ public class Masser extends JavaPlugin
 	    
 	    if (this.sanguine)
 	    {
-			for (int i = 0; i < this.getServer().getOnlinePlayers().length; i++)
+			for (int i = 0; i < this.getServer().getOnlinePlayers().size(); i++)
 			{
-				Player target = this.getServer().getOnlinePlayers()[i];
+				Player target = players[i];
 				
 				if (Manipulation.random(1, 200) == 10)
 				{
@@ -1819,9 +1819,9 @@ public class Masser extends JavaPlugin
 		
 		this.broadcastAdminChat(ChatColor.RED + "-> Blood Moon has stopped.");
 		
-		for (int i = 0; i < this.getServer().getOnlinePlayers().length; i++)
+		for (int i = 0; i < this.getServer().getOnlinePlayers().size(); i++)
 		{
-			this.getGamer(this.getServer().getOnlinePlayers()[i].getName(), true).sendData("sanguine", "0");
+			this.getGamer(players[i].getName(), true).sendData("sanguine", "0");
 		}
 	}
 	
@@ -1836,9 +1836,9 @@ public class Masser extends JavaPlugin
 		
 		this.broadcastAdminChat(ChatColor.RED + "-> Blood Moon has started.");
 		
-		for (int i = 0; i < this.getServer().getOnlinePlayers().length; i++)
+		for (int i = 0; i < this.getServer().getOnlinePlayers().size(); i++)
 		{
-			Gamer gamer = this.getGamer(this.getServer().getOnlinePlayers()[i].getName(), true);
+			Gamer gamer = this.getGamer(this.players[i].getName(), true);
 			
 			gamer.sendData("sanguine", "1");
 		}

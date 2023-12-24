@@ -169,26 +169,26 @@ public class Manipulation {
 	// Method to determine if a given material is a sword.
 	public static boolean isSword(Material material) {
 		// A list of materials that are considered swords.
-		return material == Material.WOOD_SWORD || material == Material.STONE_SWORD
+		return material == Material.WOODEN_SWORD || material == Material.STONE_SWORD
 				|| material == Material.IRON_SWORD || material == Material.DIAMOND_SWORD;
 	}
 
 	// Method to determine if a given material is a hoe.
 	public static boolean isHoe(Material material) {
 		// A list of materials that are considered hoes.
-		return material == Material.WOOD_HOE || material == Material.STONE_HOE
+		return material == Material.WOODEN_HOE || material == Material.STONE_HOE
 				|| material == Material.IRON_HOE || material == Material.DIAMOND_HOE
-				|| material == Material.GOLD_HOE;
+				|| material == Material.GOLDEN_HOE;
 	}
 
 	// Method to calculate damage based on the type of hoe.
 	public static int damageFromHoe(Material material) {
 		// Damage ranges are defined for different types of hoes.
-		if (material == Material.WOOD_HOE) {
+		if (material == Material.WOODEN_HOE) {
 			return random(1, 3);
 		} else if (material == Material.STONE_HOE) {
 			return random(1, 7);
-		} else if (material == Material.GOLD_HOE) {
+		} else if (material == Material.GOLDEN_HOE) {
 			return random(1, 9);
 		} else if (material == Material.IRON_HOE) {
 			return random(2, 14);

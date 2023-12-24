@@ -5,7 +5,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,12 +21,14 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 import yaroster.masser.Masser;
 import yaroster.masser.Masser.collisionType;
 import yaroster.masser.common.Manipulation;
 import yaroster.masser.stockers.*;
 
 import java.util.Calendar;
+import java.util.Objects;
 //import org.bukkit.entity.Wolf;
 
 public class Gamering extends Listening
@@ -343,7 +347,7 @@ public class Gamering extends Listening
     		return;
     	}
 
-    	event.setCancelled(!(gamer.blockRightClick(event.getRightClicked().getLocation(), material, event.getPlayer().getItemInHand())));
+    	event.setCancelled(!(gamer.blockRightClick(event.getRightClicked().getLocation(), material, event.getPlayer().getInventory().getItemInMainHand())));
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -377,7 +381,7 @@ public class Gamering extends Listening
     		return;
     	}
 
-    	event.setCancelled(!gamer.blockLeftClick(event.getEntity().getLocation(), material, gamer.source.getItemInHand().getType()));
+    	event.setCancelled(!gamer.blockLeftClick(event.getEntity().getLocation(), material, gamer.source.getInventory().getItemInMainHand().getType()));
     }
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -404,7 +408,7 @@ public class Gamering extends Listening
     		return;
     	}
 
-    	event.setCancelled(!gamer.blockPlaceEvent(event.getEntity().getLocation(), material, gamer.source.getItemInHand().getType()));
+    	event.setCancelled(!gamer.blockPlaceEvent(event.getEntity().getLocation(), material, gamer.source.getInventory().getItemInMainHand().getType()));
     }
 	
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -419,7 +423,7 @@ public class Gamering extends Listening
     		return;
     	}
     	
-    	event.setCancelled(!gamer.blockPlaceEvent(event.getBlockClicked().getLocation(), event.getBucket(), gamer.source.getItemInHand().getType()));
+    	event.setCancelled(!gamer.blockPlaceEvent(event.getBlockClicked().getLocation(), event.getBucket(), gamer.source.getInventory().getItemInMainHand().getType()));
     }
 	
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -456,7 +460,7 @@ public class Gamering extends Listening
     	
     	if (event.getAction() == Action.RIGHT_CLICK_AIR)
     	{
-    		if (gamer.source.getItemInHand().getType() == Material.ENDER_PEARL)
+    		if (gamer.source.getInventory().getItemInMainHand().getType() == Material.ENDER_PEARL)
     		{
     			if (gamer.isPrison())
     			{
@@ -476,13 +480,13 @@ public class Gamering extends Listening
     	
     	if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
     	{
-    		event.setCancelled(!gamer.blockRightClick(event.getClickedBlock().getLocation(), event.getClickedBlock().getType(), event.getItem()));
+    		event.setCancelled(!gamer.blockRightClick(Objects.requireNonNull(event.getClickedBlock()).getLocation(), event.getClickedBlock().getType(), event.getItem()));
     		
     		if (!event.isCancelled())
     		{
     	    	if (this.canBeInteracted(event.getClickedBlock().getType()))
     	    	{
-    	    		if (event.getClickedBlock().getType() == Material.BED_BLOCK && this.main.sanguine)
+    	    		if (event.getClickedBlock().getType() == Material.RED_BED && this.main.sanguine)
 	    	    	{
 	    	    		gamer.sendMessage("nobed.sanguine", this.main.colors.diverse);
 	    	    		
@@ -510,10 +514,10 @@ public class Gamering extends Listening
         	return;
     	}
     	
-    	if (event.getAction() == Action.PHYSICAL && event.getClickedBlock() != null && (event.getClickedBlock().getType() == Material.SOIL
-    			|| event.getClickedBlock().getType() == Material.WOOD_PLATE || event.getClickedBlock().getType() == Material.STONE_PLATE))
+    	if (event.getAction() == Action.PHYSICAL && event.getClickedBlock() != null && (event.getClickedBlock().getType() == Material.FARMLAND
+    			|| event.getClickedBlock().getType() == Material.OAK_PRESSURE_PLATE || event.getClickedBlock().getType() == Material.STONE_PRESSURE_PLATE))
     	{
-    		if (event.getClickedBlock().getType() == Material.STONE_PLATE)
+    		if (event.getClickedBlock().getType() == Material.STONE_PRESSURE_PLATE)
     		{
     			Teleporter teleporter = this.main.getTeleporter(event.getClickedBlock().getLocation());
     			
@@ -535,17 +539,16 @@ public class Gamering extends Listening
 	
 	private boolean canBeInteracted(Material material)
 	{
-		return material == Material.CHEST || material == Material.WORKBENCH || material == Material.FURNACE
-				|| material == Material.WOODEN_DOOR || material == Material.BED || material == Material.BOAT
-				|| material == Material.STONE_BUTTON || material == Material.WOOD_BUTTON || material == Material.LEVER
-				|| material == Material.ENCHANTMENT_TABLE || material == Material.JUKEBOX || material == Material.ENDER_PORTAL_FRAME
-				|| material == Material.MINECART || material == Material.BURNING_FURNACE || material == Material.SAPLING
-				|| material == Material.TRAP_DOOR || material == Material.CAULDRON || material == Material.BREWING_STAND
-				|| material == Material.FLOWER_POT || material == Material.FENCE_GATE || material == Material.LOCKED_CHEST
+		return material == Material.CHEST || material == Material.CRAFTING_TABLE || material == Material.FURNACE
+				|| material == Material.OAK_DOOR || material == Material.RED_BED || material == Material.OAK_BOAT
+				|| material == Material.STONE_BUTTON || material == Material.OAK_BUTTON || material == Material.LEVER
+				|| material == Material.ENCHANTING_TABLE || material == Material.JUKEBOX || material == Material.END_PORTAL_FRAME
+				|| material == Material.MINECART || material == Material.OAK_SAPLING || material == Material.OAK_TRAPDOOR
+				|| material == Material.CAULDRON || material == Material.BREWING_STAND
+				|| material == Material.FLOWER_POT || material == Material.OAK_FENCE_GATE
 				|| material == Material.ENDER_CHEST || material == Material.BEACON || material == Material.ANVIL
-				|| material == Material.DIODE || material == Material.DIODE_BLOCK_OFF || material == Material.DIODE_BLOCK_ON
-				|| material == Material.NOTE_BLOCK || material == Material.BED_BLOCK || material == Material.TNT
-				|| material == Material.CAKE_BLOCK || material == Material.DISPENSER;
+				|| material == Material.REPEATER || material == Material.NOTE_BLOCK || material == Material.TNT
+				|| material == Material.CAKE || material == Material.DISPENSER;
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -653,7 +656,7 @@ public class Gamering extends Listening
     		return;
     	}
     	
-    	event.setCancelled(!gamer.blockPlaceEvent(event.getBlock().getLocation(), event.getBlock().getType(), gamer.source.getItemInHand().getType()));
+    	event.setCancelled(!gamer.blockPlaceEvent(event.getBlock().getLocation(), event.getBlock().getType(), gamer.source.getInventory().getItemInMainHand().getType()));
     }
 	
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -669,7 +672,7 @@ public class Gamering extends Listening
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPotionSplash(PotionSplashEvent event)
 	{
-		if (event.getEntity().getShooter().getType() != EntityType.PLAYER)
+		if (event.getEntity().getShooter() instanceof Player)
 		{
 			return;
 		}
@@ -731,7 +734,7 @@ public class Gamering extends Listening
 					return;
 				}
 				
-				if (((Projectile)event.getDamager()).getShooter().getType() != EntityType.PLAYER)
+				if (((Projectile)event.getDamager()).getShooter() instanceof Player)
 				{
 					if (!this.main.configuration.mobKillEachOther)
 					{
@@ -755,7 +758,7 @@ public class Gamering extends Listening
 		    		event.setDamage(((LivingEntity)event.getEntity()).getHealth());
 		    	}
 		    	
-		    	Damevent dame = attacker.attackEntityEvent(event.getEntity(), event.getDamage());
+		    	Damevent dame = attacker.attackEntityEvent(event.getEntity(), (int) event.getDamage());
 		    	
 		    	event.setCancelled(!dame.notCancelled); //retourne false pour mettre le event cancelled
 		    	
@@ -780,29 +783,19 @@ public class Gamering extends Listening
 				return;
 			}
 
-			if (!(event.getDamager() instanceof Projectile) && !(event.getDamager() instanceof BlockContainer)) //si l'attaqueur n'est pas un projectile
-			{
-				event.setDamage(target.attackedByEntityEvent(event.getDamager(), event.getDamage()));
-		    	
-		    	return;
-			}
+            if (!(event.getDamager() instanceof Projectile)) {
+                event.getDamager();
+            }
 
-			Entity damager = null;
+            Entity damager = null;
 			
 			if (event.getDamager() instanceof Projectile)
 			{
-				damager = ((Projectile)event.getDamager()).getShooter();
+				damager = (Entity) ((Projectile)event.getDamager()).getShooter();
 			}
-			else if (event.getDamager() instanceof BlockContainer)
-			{
-				
-			}
-			else
-			{
-				System.out.println("DEBUG: SHOOTER IS NULL, DAMAGER TYPE " + event.getDamager().getType() + ", PLAYER " + target.information.name);
-				
-				return;
-			}
+			else {
+                event.getDamager();
+            }
 			
 			if (damager == null)
 			{
@@ -827,7 +820,7 @@ public class Gamering extends Listening
 					event.setDamage(target.source.getHealth());
 				}
 
-				Damevent dame = realDamager.attackGamerEvent(target, event.getDamage());
+				Damevent dame = realDamager.attackGamerEvent(target, (int) event.getDamage());
 				
 	    		event.setCancelled(!dame.notCancelled); //retourne false pour mettre le event cancelled
 	    		
@@ -838,12 +831,12 @@ public class Gamering extends Listening
 	    			return;
 	    		}
 	    		
-	    		event.setDamage(target.attackedByGamerEvent(realDamager, event.getDamage()));
+	    		event.setDamage(target.attackedByGamerEvent(realDamager, (int) event.getDamage()));
 		    	
 		    	return;
 			}
 			
-			event.setDamage(target.attackedByEntityEvent(damager, event.getDamage()));
+			event.setDamage(target.attackedByEntityEvent(damager, (int) event.getDamage()));
 	    	
 			return;
 		}
@@ -879,7 +872,7 @@ public class Gamering extends Listening
 	    		event.setDamage(target.source.getHealth());
 	    	}
 	    	
-	    	Damevent dame = attacker.attackGamerEvent(target, event.getDamage());
+	    	Damevent dame = attacker.attackGamerEvent(target, (int) event.getDamage());
 	    	
     		event.setCancelled(!dame.notCancelled); //retourne false pour mettre le event cancelled
     		
@@ -890,7 +883,7 @@ public class Gamering extends Listening
     			return;
     		}
     		
-    		event.setDamage(target.attackedByGamerEvent(attacker, event.getDamage()));
+    		event.setDamage(target.attackedByGamerEvent(attacker, (int) event.getDamage()));
     		
     		return;
     	}
@@ -900,7 +893,7 @@ public class Gamering extends Listening
     		event.setDamage(((LivingEntity)event.getEntity()).getHealth());
     	}
     	
-    	Damevent dame = attacker.attackEntityEvent(event.getEntity(), event.getDamage());
+    	Damevent dame = attacker.attackEntityEvent(event.getEntity(), (int) event.getDamage());
     	
     	event.setCancelled(!dame.notCancelled); //retourne false pour mettre le event cancelled
     	
@@ -942,34 +935,36 @@ public class Gamering extends Listening
 			}
 
 			EntityDamageEvent damageEvent = event.getEntity().getLastDamageCause();
-			
-	        if (damageEvent instanceof EntityDamageByEntityEvent)
-	        {
+
+			if (damageEvent instanceof EntityDamageByEntityEvent) {
 				Language[] languages = this.main.getLanguages();
-				
-				if (!(((EntityDamageByEntityEvent) damageEvent).getDamager() instanceof Projectile))
-				{
-					killedGamer.killedByEntity(((EntityDamageByEntityEvent) damageEvent).getDamager());
-				
-					for (int i = 0; i < languages.length; i++)
-					{
+				EntityDamageByEntityEvent entityDamageEvent = (EntityDamageByEntityEvent) damageEvent;
+
+				if (!(entityDamageEvent.getDamager() instanceof Projectile)) {
+					killedGamer.killedByEntity(entityDamageEvent.getDamager());
+
+					for (int i = 0; i < languages.length; i++) {
 						this.main.broadcastSameLanguage(languages[i].id, this.main.getText(languages[i].id, "death.mob.kills", this.main.colors.diverse, killedGamer.getNameColor(),
-								this.main.getText(languages[i].id, "mobs." + ((EntityDamageByEntityEvent) damageEvent).getDamager().getType().toString().toLowerCase(), this.main.colors.diverse)));
+								this.main.getText(languages[i].id, "mobs." + entityDamageEvent.getDamager().getType().toString().toLowerCase(), this.main.colors.diverse)));
+					}
+				} else {
+					ProjectileSource shooter = ((Projectile) entityDamageEvent.getDamager()).getShooter();
+
+					if (shooter instanceof Entity) {
+						Entity shooterEntity = (Entity) shooter;
+						killedGamer.killedByEntity(shooterEntity);
+
+						for (int i = 0; i < languages.length; i++) {
+							String entityTypeString = shooterEntity.getType().toString().toLowerCase();
+							this.main.broadcastSameLanguage(languages[i].id, this.main.getText(languages[i].id, "death.mob.kills", this.main.colors.diverse, killedGamer.getNameColor(),
+									this.main.getText(languages[i].id, "mobs." + entityTypeString, this.main.colors.diverse)));
+						}
+					} else {
 					}
 				}
-				else
-				{
-					killedGamer.killedByEntity(((Projectile)((EntityDamageByEntityEvent) damageEvent).getDamager()).getShooter());
-				
-					for (int i = 0; i < languages.length; i++)
-					{
-						this.main.broadcastSameLanguage(languages[i].id, this.main.getText(languages[i].id, "death.mob.kills", this.main.colors.diverse, killedGamer.getNameColor(),
-								this.main.getText(languages[i].id, "mobs." + ((Projectile)((EntityDamageByEntityEvent) damageEvent).getDamager()).getShooter().getType().toString().toLowerCase(),
-										this.main.colors.diverse)));
-					}
-				}
-	        }
-			
+			}
+
+
 			return;
 		}
 		
@@ -1051,7 +1046,7 @@ public class Gamering extends Listening
 			return;
 		}
 		
-		gamer.source.getInventory().addItem(new ItemStack(Material.WOOD_PICKAXE, 1));
+		gamer.source.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE, 1));
 		
 		gamer.updateInventory();
 		
@@ -1607,11 +1602,11 @@ public class Gamering extends Listening
 			{
 				return commandState.Incorrect;
 			}
-			
-			EntityType entity = EntityType.fromName(args[0].toUpperCase());
-			
-			if (entity == null)
-			{
+
+			EntityType entity;
+			try {
+				entity = EntityType.valueOf(args[0].toUpperCase());
+			} catch (IllegalArgumentException e) {
 				return commandState.Error;
 			}
 
@@ -2941,8 +2936,8 @@ public class Gamering extends Listening
 					return commandState.Accepted;
 				}
 				
-				if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.SIGN
-						&& gamer.stockedLeftClickLocation.getBlock().getType() != Material.SIGN_POST
+				if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.OAK_SIGN
+						&& gamer.stockedLeftClickLocation.getBlock().getType() != Material.OAK_WALL_SIGN
 						&& gamer.stockedLeftClickLocation.getBlock().getType() != Material.AIR)
 				{
 					gamer.sendMessage("command.shop.needsign", this.main.colors.shop);
@@ -3008,8 +3003,8 @@ public class Gamering extends Listening
 						return commandState.Accepted;
 					}
 					
-					if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.SIGN
-							&& gamer.stockedLeftClickLocation.getBlock().getType() != Material.SIGN_POST)
+					if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.OAK_SIGN
+							&& gamer.stockedLeftClickLocation.getBlock().getType() != Material.OAK_WALL_SIGN)
 					{
 						if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.AIR)
 						{
@@ -3093,8 +3088,8 @@ public class Gamering extends Listening
 						return commandState.NoRights;
 					}
 					
-					if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.SIGN
-							&& gamer.stockedLeftClickLocation.getBlock().getType() != Material.SIGN_POST)
+					if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.OAK_SIGN
+							&& gamer.stockedLeftClickLocation.getBlock().getType() != Material.OAK_WALL_SIGN)
 					{
 						if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.AIR)
 						{
@@ -3154,8 +3149,8 @@ public class Gamering extends Listening
 				
 				if (args[0].equalsIgnoreCase("delete")) //supprimer un magasin
 				{
-					if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.SIGN
-							&& gamer.stockedLeftClickLocation.getBlock().getType() != Material.SIGN_POST)
+					if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.OAK_SIGN
+							&& gamer.stockedLeftClickLocation.getBlock().getType() != Material.OAK_WALL_SIGN)
 					{
 						if (gamer.stockedLeftClickLocation.getBlock().getType() != Material.AIR)
 						{
@@ -3851,43 +3846,39 @@ public class Gamering extends Listening
 
 			return commandState.Incorrect;
 		}
-		
-		if (label.equalsIgnoreCase("spawner"))
-		{
-			if (!gamer.grad.canSpawner)
-			{
+
+		if (label.equalsIgnoreCase("spawner")) {
+			if (!gamer.grad.canSpawner) {
 				return commandState.NoRights;
 			}
-			
-			if (args.length != 1)
-			{
+
+			if (args.length != 1) {
 				return commandState.Incorrect;
 			}
-			
-			EntityType entity = EntityType.fromName(args[0].toUpperCase());
-			
-			if (entity == null)
-			{
+
+			EntityType entity;
+			try {
+				entity = EntityType.valueOf(args[0].toUpperCase());
+			} catch (IllegalArgumentException e) {
 				return commandState.Error;
 			}
-			
-			if (gamer.stockedLeftClickLocation == null)
-			{
+
+			if (gamer.stockedLeftClickLocation == null) {
 				gamer.sendMessage("block.pleaseselect1", true);
-				
 				return commandState.Accepted;
 			}
-			
-			gamer.stockedLeftClickLocation.getBlock().setType(Material.MOB_SPAWNER);
-		    
-		    ((CreatureSpawner) gamer.stockedLeftClickLocation.getBlock().getState()).setSpawnedType(entity);
 
-			gamer.stockedLeftClickLocation.getBlock().setData((byte)entity.getTypeId());
-			
+			Block block = gamer.stockedLeftClickLocation.getBlock();
+			block.setType(Material.SPAWNER);
+
+			CreatureSpawner spawner = (CreatureSpawner) block.getState();
+			spawner.setSpawnedType(entity);
+			spawner.update();  // Important pour appliquer les changements
+
 			gamer.sendMessage("command.spawner.ok", true);
-			
 			return commandState.Accepted;
 		}
+
 		
 		if (label.equalsIgnoreCase("invisibleban"))
 		{
@@ -4620,7 +4611,7 @@ public class Gamering extends Listening
 					return commandState.Incorrect;
 				}
 				
-				if (gamer.source.getItemInHand().getType() == Material.AIR)
+				if (gamer.source.getInventory().getItemInMainHand().getType() == Material.AIR)
 				{
 					gamer.sendMessage("command.prison.respawn.incorrect", this.main.colors.prison);
 					
@@ -4641,7 +4632,7 @@ public class Gamering extends Listening
 					gamer.sendMessage("command.prison.inexistant", this.main.colors.prison);
 				}
 				
-				this.main.prispos.put(gamer.stockedLeftClickLocation, new Prispos(prison, gamer.stockedLeftClickLocation, new Dinger(inter1, inter2), gamer.source.getItemInHand().getType()));
+				this.main.prispos.put(gamer.stockedLeftClickLocation, new Prispos(prison, gamer.stockedLeftClickLocation, new Dinger(inter1, inter2), gamer.source.getInventory().getItemInMainHand().getType()));
 				
 				gamer.sendMessage("command.prison.respawn.ok", this.main.colors.prison, prison.variable);
 				

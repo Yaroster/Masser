@@ -351,21 +351,19 @@ public class Database
 		
         try
         {
-        	while (queryResult.next())
-        	{
-        		EntityType type = null;
-        		
-        		try
-        		{
-        			type = EntityType.fromId(Integer.parseInt(queryResult.getString(2)));
-        		}
-        		catch (Exception ex)
-        		{
-        			type = EntityType.fromName(queryResult.getString(2));
-        		}
+			while (queryResult.next()) {
+				EntityType type = null;
 
-        		mobMoneys.put(type, new MobMoney(queryResult.getInt(1), type, queryResult.getInt(3), queryResult.getInt(4), queryResult.getBoolean(5)));
-        	}
+				try {
+					type = EntityType.valueOf(queryResult.getString(2).toUpperCase());
+				} catch (IllegalArgumentException ex) {
+					// Gérer l'erreur si le type d'entité n'est pas reconnu
+				}
+
+				if (type != null) {
+					mobMoneys.put(type, new MobMoney(queryResult.getInt(1), type, queryResult.getInt(3), queryResult.getInt(4), queryResult.getBoolean(5)));
+				}
+			}
         }
         catch (SQLException ex)
         {
@@ -539,7 +537,7 @@ public class Database
         		Location location = Manipulation.getLocationWorld(queryResult.getString("position"));
 
         		shops.put(location, new Shop(queryResult.getInt("id"), new Ownable(queryResult.getString("owner")),
-        				new Pricable(queryResult.getInt("price")), queryResult.getBoolean("diminuates"), Material.getMaterial(queryResult.getInt("material")),
+        				new Pricable(queryResult.getInt("price")), queryResult.getBoolean("diminuates"), Material.getMaterial(String.valueOf(queryResult.getInt("material"))),
         				queryResult.getInt("quantity"), location, queryResult.getInt("sells"), queryResult.getShort("data")));
         	}
         }
@@ -552,19 +550,19 @@ public class Database
         
 		return shops;
 	}
-	
-	public void addShop(Shop shop)
-	{
+
+	public void addShop(Shop shop) {
 		this.connection.ExecuteInsert("INSERT INTO shops(owner, price, material, position, quantity, diminuates, sells, data) VALUES('"
-			+ shop.ownable.owner + "', " + shop.pricable.price + ", " + shop.material.getId() + ", '" + Manipulation.getLocationWorld(shop.position) + "', "
-			+ shop.quantity + ", "  + (shop.diminuates? 1 : 0)  + ", " + shop.sells + ", " + shop.data + ")");
-		
+				+ shop.ownable.owner + "', " + shop.pricable.price + ", '" + shop.material.name() + "', '" + Manipulation.getLocationWorld(shop.position) + "', "
+				+ shop.quantity + ", "  + (shop.diminuates ? 1 : 0)  + ", " + shop.sells + ", " + shop.data + ")");
+
 		shop.id = this.connection.GetLastId("shops");
 	}
+
 	
 	public void updateShop(Shop shop)
 	{
-		this.connection.ExecuteUpdate("UPDATE shops SET price = " + shop.pricable.price + ", material = " + shop.material.getId() + ", quantity = "
+		this.connection.ExecuteUpdate("UPDATE shops SET price = " + shop.pricable.price + ", material = " + shop.material.name() + ", quantity = "
 				+ shop.quantity + ", sells = " + shop.sells + ", data = " + shop.data + " WHERE id = " + shop.id);
 	}
 	
@@ -661,7 +659,7 @@ public class Database
         {
         	while (queryResult.next())
         	{
-        		prisvals.add(new Prisval(queryResult.getInt("id"), Material.getMaterial(queryResult.getInt("block")), queryResult.getInt("value")));
+        		prisvals.add(new Prisval(queryResult.getInt("id"), Material.getMaterial(String.valueOf(queryResult.getInt("block"))), queryResult.getInt("value")));
         	}
         }
         catch (Exception ex)
@@ -787,7 +785,7 @@ public class Database
         		Location location = Manipulation.getLocationWorld(queryResult.getString("location"));
         		
         		prispos.put(location, new Prispos(queryResult.getInt("id"), this.main.getPrison(queryResult.getInt("prison")),
-        				location, Manipulation.getDinger(queryResult.getString("timing"), true), Material.getMaterial(queryResult.getInt("item"))));
+        				location, Manipulation.getDinger(queryResult.getString("timing"), true), Material.getMaterial(String.valueOf(queryResult.getInt("item")))));
         	}
         }
         catch (Exception ex)
@@ -806,7 +804,7 @@ public class Database
 				+ prispos.prison.id + ", "
 				+ "'" + Manipulation.getLocationWorld(prispos.location) + "', "
 				+ "'" + Manipulation.getDinger(prispos.interval) + "', "
-				+ prispos.item.getId()
+				+ prispos.item.name()
 				+ ")");
 			
 		prispos.id = this.connection.GetLastId("prisches");
@@ -875,7 +873,7 @@ public class Database
         {
         	while (queryResult.next())
         	{
-        		genneds.add(new Genned(queryResult.getInt("id"), queryResult.getInt("chance"), queryResult.getInt("value"), Material.getMaterial(queryResult.getInt("item"))));
+        		genneds.add(new Genned(queryResult.getInt("id"), queryResult.getInt("chance"), queryResult.getInt("value"), Material.getMaterial(String.valueOf(queryResult.getInt("item")))));
         	}
         }
         catch (Exception ex)

@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -12,11 +13,13 @@ import org.bukkit.potion.PotionEffectType;
 import yaroster.masser.Masser;
 import yaroster.masser.common.Manipulation;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Objects;
 
 public class Gamer
 {
-	private Masser main;
+	private final Masser main;
 	
 	public Player source;
 	
@@ -149,7 +152,7 @@ public class Gamer
 		    {
 		    	if (!player.canSee(this.source))
 		    	{
-		    		player.showPlayer(this.source);
+		    		player.showPlayer(main, this.source);
 		    	}
 		    }
 		    //this.source.removePotionEffect(PotionEffectType.INVISIBILITY);
@@ -160,7 +163,7 @@ public class Gamer
 		    {
 		    	if (player.canSee(this.source))
 		    	{
-		    		player.hidePlayer(this.source);
+		    		player.hidePlayer(main, this.source);
 		    	}
 		    }
 		    //this.source.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 1));
@@ -196,19 +199,19 @@ public class Gamer
     	this.refreshFlight();
     	
 		this.source.setWalkSpeed((float)0.2);
-		
-		this.source.setMaxHealth(20);
-    	
-    	if (this.IsType(this.main.genres.Warrior))
-    	{
-    		this.source.setWalkSpeed((float)(this.source.getWalkSpeed() / 1.07));
-    		
-    		this.source.setMaxHealth((int)(this.source.getMaxHealth() * 1.2));
-    	}
-    	else if (this.IsType(this.main.genres.Thief))
-    	{
-    		this.source.setWalkSpeed((float)(this.source.getWalkSpeed() * 1.085));
-    	}
+
+		Objects.requireNonNull(this.source.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(20);
+
+		if (this.IsType(this.main.genres.Warrior)) {
+			this.source.setWalkSpeed((float)(this.source.getWalkSpeed() / 1.07));
+
+			double currentMaxHealth = Objects.requireNonNull(this.source.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
+			Objects.requireNonNull(this.source.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(currentMaxHealth * 1.2);
+			//TODO: Check if this could throw a NPE
+		}
+		else if (this.IsType(this.main.genres.Thief)) {
+			this.source.setWalkSpeed((float)(this.source.getWalkSpeed() * 1.085));
+		}
     	
     	if (this.isPrison())
     	{
@@ -325,25 +328,25 @@ public class Gamer
 		
 		this.lastDamager = target;
 		
-		if (this.IsType(this.main.genres.Warrior) && Manipulation.isSword(this.source.getItemInHand().getType()))
+		if (this.IsType(this.main.genres.Warrior) && Manipulation.isSword(this.source.getInventory().getItemInMainHand().getType()))
 		{
 			damage *= 1.1;
 		}
 		else if (this.IsType(this.main.genres.Archer))
 		{
-			if (this.source.getItemInHand().getType() == Material.BOW)
+			if (this.source.getInventory().getItemInMainHand().getType() == Material.BOW)
 			{
 				damage *= 1.1;
 			}
-			else if (Manipulation.isSword(this.source.getItemInHand().getType()))
+			else if (Manipulation.isSword(this.source.getInventory().getItemInMainHand().getType()))
 			{
 				damage /= 1.1;
 			}
 		}
-		else if (this.IsType(this.main.genres.Thief) && Manipulation.isHoe(this.source.getItemInHand().getType())
+		else if (this.IsType(this.main.genres.Thief) && Manipulation.isHoe(this.source.getInventory().getItemInMainHand().getType())
 				&& this.source.hasPotionEffect(PotionEffectType.INVISIBILITY))
 		{
-			damage = Manipulation.damageFromHoe(this.source.getItemInHand().getType());
+			damage = Manipulation.damageFromHoe(this.source.getInventory().getItemInMainHand().getType());
 			
 			//if (target.source.canSee(this.source))
 			//{
@@ -397,22 +400,22 @@ public class Gamer
 		
 		this.lastDamager = null;
 		
-		if (this.IsType(this.main.genres.Warrior) && Manipulation.isSword(this.source.getItemInHand().getType()))
+		if (this.IsType(this.main.genres.Warrior) && Manipulation.isSword(this.source.getInventory().getItemInMainHand().getType()))
 		{
 			damage *= 1.2;
 		}
 		else if (this.IsType(this.main.genres.Archer))
 		{
-			if (this.source.getItemInHand().getType() == Material.BOW)
+			if (this.source.getInventory().getItemInMainHand().getType() == Material.BOW)
 			{
 				damage *= 1.1;
 			}
-			else if (Manipulation.isSword(this.source.getItemInHand().getType()))
+			else if (Manipulation.isSword(this.source.getInventory().getItemInMainHand().getType()))
 			{
 				damage /= 1.2;
 			}
 		}
-		else if (this.IsType(this.main.genres.Thief) && Manipulation.isHoe(this.source.getItemInHand().getType())
+		else if (this.IsType(this.main.genres.Thief) && Manipulation.isHoe(this.source.getInventory().getItemInMainHand().getType())
 				&& this.source.hasPotionEffect(PotionEffectType.INVISIBILITY))
 		{
 			damage *= Manipulation.random(0, 17);
@@ -707,7 +710,7 @@ public class Gamer
 			return;
 		}
 
-		this.main.log.log("kills", "Congratulations to " + this.source.getName() + " for killing " + target.getType().getName() + " for " + money + " tires");
+		this.main.log.log("kills", "Congratulations to " + this.source.getName() + " for killing " + target.toString() + " for " + money + " tires");
 
 		//on envoie le message de felication a tout le monde -->
 		
@@ -821,8 +824,8 @@ public class Gamer
 			return false;
 		}
 		
-		if (material == Material.SIGN
-				|| material == Material.SIGN_POST
+		if (material == Material.OAK_SIGN
+				|| material == Material.OAK_WALL_SIGN
 				|| material == Material.ITEM_FRAME)
 		{
 			Shop shop = this.main.shops.get(location);
@@ -934,8 +937,8 @@ public class Gamer
 			return false;
 		}
 		
-		if (material == Material.SIGN
-				|| material == Material.SIGN_POST
+		if (material == Material.OAK_SIGN
+				|| material == Material.OAK_WALL_SIGN
 				|| material == Material.ITEM_FRAME)
 		{
 			Shop shop = this.main.shops.get(location);
@@ -1088,14 +1091,10 @@ public class Gamer
 					}
 					return true;
 				case blockSoil:
-					if (!this.grad.canSoilDestroyLocked)
-					{
-						//on envoie pas de message pour quand le joueur ecrase (du ble par exemple)
-						//this.sendMessage(this.main.getText(this.information.language, "block.soil.locked.not"));
-						return false;
-					}
-					return true;
-			}
+                    //on envoie pas de message pour quand le joueur ecrase (du ble par exemple)
+                    //this.sendMessage(this.main.getText(this.information.language, "block.soil.locked.not"));
+                    return this.grad.canSoilDestroyLocked;
+            }
 		}
 		
 		Terrain terrain = this.main.getTerrainFromLocation(point);
@@ -1136,13 +1135,9 @@ public class Gamer
 					}
 					return true;
 				case blockSoil:
-					if (!this.grad.canSoilDestroyReserved)
-					{
-						//this.sendMessage(this.main.getText(this.information.language, "block.soil.locked.not"));
-						return false;
-					}
-					return true;
-			}
+                    //this.sendMessage(this.main.getText(this.information.language, "block.soil.locked.not"));
+                    return this.grad.canSoilDestroyReserved;
+            }
 		}
 
 		Prison prison = this.main.getPrisonFromLocation(point);
@@ -1185,7 +1180,7 @@ public class Gamer
 							this.sendMessage("block.interact.prison.not", this.main.colors.diverse);
 							return false;
 						}
-						if (material == Material.WORKBENCH || material == Material.FURNACE || material == Material.BURNING_FURNACE)
+						if (material == Material.CRAFTING_TABLE || material == Material.FURNACE)
 						{
 							return true;
 						}
@@ -1207,9 +1202,9 @@ public class Gamer
 								return false;
 							}
 							
-							this.information.prisonLeft -= this.source.getItemInHand().getAmount() * prisval.value;
+							this.information.prisonLeft -= this.source.getInventory().getItemInMainHand().getAmount() * prisval.value;
 							
-							this.source.getInventory().remove(this.source.getItemInHand());
+							this.source.getInventory().remove(this.source.getInventory().getItemInMainHand());
 							
 							if (this.information.prisonLeft <= 0)
 							{
@@ -1224,13 +1219,9 @@ public class Gamer
 					}
 					return true;
 				case blockSoil:
-					if (!this.grad.canSoilDestroyReserved)
-					{
-						//this.sendMessage(this.main.getText(this.information.language, "block.soil.locked.not"));
-						return false;
-					}
-					return true;
-			}
+                    //this.sendMessage(this.main.getText(this.information.language, "block.soil.locked.not"));
+                    return this.grad.canSoilDestroyReserved;
+            }
 		}
 		
 		Clan clan = this.main.getClanFromLocation(point);
@@ -1340,13 +1331,9 @@ public class Gamer
 					}
 					return true;
 				case blockSoil:
-					if (!this.grad.canSoilDestroyClan && !clan.isIn(this))
-					{
-						//this.sendMessage(this.main.getText(this.information.language, "block.soil.clan.not"));
-						return false;
-					}
-					return true;
-			}
+                    //this.sendMessage(this.main.getText(this.information.language, "block.soil.clan.not"));
+                    return this.grad.canSoilDestroyClan || clan.isIn(this);
+            }
 		}
 		
 		return true;
@@ -1367,13 +1354,8 @@ public class Gamer
 		
 		if (indestructible != null)
 		{
-			if (this.grad.canBreakWhereLocked)
-			{
-				return true;
-			}
-			
-			return false;
-		}
+            return this.grad.canBreakWhereLocked;
+        }
 		
 		terrain = this.main.getTerrainFromLocation(event.getLocation());
 		
@@ -1394,13 +1376,8 @@ public class Gamer
 		
 		if (prison != null)
 		{
-			if (this.grad.canGodJails)
-			{
-				return true;
-			}
-			
-			return false;
-		}
+            return this.grad.canGodJails;
+        }
 		
 		clan = this.main.getClanFromLocation(event.getLocation());
 		
@@ -1445,13 +1422,8 @@ public class Gamer
 			
 			if (indestructible != null)
 			{
-				if (this.grad.canBreakWhereLocked)
-				{
-					return true;
-				}
-				
-				return false;
-			}
+                return this.grad.canBreakWhereLocked;
+            }
 			
 			terrain = this.main.getTerrainFromLocation(event.blockList().get(i).getLocation());
 			
@@ -1536,29 +1508,18 @@ public class Gamer
 		this.source.kickPlayer(this.main.getText(this.information.language, "nologin.player.banned"));
 	}
 
-	public void sendData(String channel, String message)
-	{
-		byte[] data = message.getBytes();
-		
-		Packet250CustomPayload packet = new Packet250CustomPayload();
-		
-        packet.tag = channel;
-        
-        packet.length = data.length;
-        
-        packet.data = data;
+	public void sendData(String channel, String message) {
+		byte[] data = message.getBytes(StandardCharsets.UTF_8);
 
-        EntityPlayer handle = ((CraftPlayer)this.source).getHandle();
-        
-        if (handle == null || handle.playerConnection == null)
-        {
-        	this.main.log.error("(handle || playerConnection) = null on sendData for player " + this.information.name);
-        	
-        	return;
-        }
-        
-        handle.playerConnection.sendPacket(packet);
+		Player player = (Player) this.source; //I cast just to make sure it's a player
+		if (player == null) {
+			this.main.log.error("Player is null on sendData for player " + this.information.name);
+			return;
+		}
+
+		player.sendPluginMessage(this.main, channel, data);
 	}
+
 	
 	private boolean firstTeleporter = true;
 	
@@ -1618,7 +1579,7 @@ public class Gamer
 		
 		this.source.teleport(prison.spawn);
 		
-		this.source.getInventory().addItem(new ItemStack(Material.WOOD_PICKAXE, 1));
+		this.source.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE, 1));
 		
 		this.updateInventory();
 		
@@ -1655,11 +1616,15 @@ public class Gamer
 		
 		this.refreshName();
 	}
-	
-	public void updateInventory()
-	{
-		((CraftPlayer)this.source).getHandle().activeContainer.a();
+
+	public void updateInventory() {
+		Player player = (Player) this.source;
+		if (player == null) {
+			return;
+		}
+		player.updateInventory();
 	}
+
 	
 	public boolean is(Gamer gamer)
 	{
