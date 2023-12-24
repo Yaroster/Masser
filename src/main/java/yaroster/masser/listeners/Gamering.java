@@ -2472,7 +2472,7 @@ public class Gamering extends Listening
 						return commandState.Accepted;
 					}
 					
-					if (this.main.collisionWithPlots(addPlot) != collisionType.NoCollision)
+					if (this.main.collisionWithPlots(addPlot) != Masser.collisionType.NoCollision)
 					{
 						gamer.sendMessage("command.terrain.touchesplot", this.main.colors.territory);
 						
@@ -2570,7 +2570,7 @@ public class Gamering extends Listening
 					
 					Plot addPlot = new Plot(gamer.stockedLeftClickLocation, gamer.stockedRightClickLocation);
 					
-					if (this.main.collisionWithPlots(addPlot) != collisionType.NoCollision)
+					if (this.main.collisionWithPlots(addPlot) != Masser.collisionType.NoCollision)
 					{
 						gamer.sendMessage("command.unbreak.touchesplot", this.main.colors.territory);
 						
@@ -3406,7 +3406,7 @@ public class Gamering extends Listening
 					return commandState.Accepted;
 				}
 				
-				if (this.main.collisionWithPlots(addPlot) != collisionType.NoCollision)
+				if (this.main.collisionWithPlots(addPlot) != Masser.collisionType.NoCollision)
 				{
 					gamer.sendMessage("command.clan.touchesplot", this.main.colors.clan);
 					
@@ -4387,7 +4387,7 @@ public class Gamering extends Listening
 				
 				Plot plot = new Plot(gamer.stockedLeftClickLocation, gamer.stockedRightClickLocation);
 				
-				if (this.main.collisionWithPlots(plot) != collisionType.NoCollision)
+				if (this.main.collisionWithPlots(plot) != Masser.collisionType.NoCollision)
 				{
 					gamer.sendMessage("command.terrain.touchesplot", this.main.colors.prison);
 					
