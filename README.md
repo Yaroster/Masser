@@ -1,4 +1,4 @@
-# ![Masser Logo](masser-logo.svg) Masser: Reviving the Spirit of Turkraft
+# <img src="masser-logo.png" alt="Masser Logo" width="50" height="50" style="vertical-align: bottom;"/> Masser: Reviving the Spirit of Turkraft
 
 Welcome to Masser, the spiritual successor of the cherished Turkraft server, now reimagined for Minecraft version 1.20.*. Masser is where the legacy of Turkraft, popular from 2012 to 2014, is reborn with a modern twist. Here, we offer the source code of our updated Bukkit plugin and a redesigned website, both drawing inspiration from the original Turkraft server. While the unique features of the original Minecraft client and launcher are not included, Masser aims to recapture the essence of its predecessor.
 
@@ -8,8 +8,8 @@ This project is still in very early developpment stages ! But we are excited to 
 
 ## Updated Tech Stack
 
-- **Java & Bukkit 1.20.*:** Utilizing the latest Bukkit version for a smooth and refined gameplay experience.
-- **PHP & MySQL:** Powering our website for a seamless player interface.
+- **Java & Bukkit 1.20.***
+- **PHP & MySQL**
 - **Inspired by [@torshid](https://github.com/torshid):** The creative force behind the original Turkraft server.
 
 ## Plugin Features: Enhanced and Expanded
@@ -35,7 +35,7 @@ This project is still in very early developpment stages ! But we are excited to 
 - **Forums & Messaging:** Engage with the community and stay connected.
 - **Skin/Cloak Customization:** Express your style with personalized appearances.
 - **User Guide & Administration Tools:** Resources for both players and server admins.
-- **TeamSpeak Integration:** Enhanced voice communication for players.
+- **Discord Integration:** Enhanced voice communication for players.
 - **Multilingual Interface:** Welcoming players from around the globe.
 
 ## A Look Back at Turkraft
@@ -48,4 +48,5 @@ Reminisce about the Turkraft days through images and a YouTube clip, and explore
 
 ## Note: For Historical Reference
 
-This project is a homage to the Turkraft legacy and an invitation to join us in Masser. While technical support might not always be a click away, the community and shared experiences await you in this new chapter.
+This project is a homage to the Turkraft legacy and an invitation to join us in Masser. While release might not always be a click away, we cannot wait to show you this new version of the server.
+Please bare in mind that I am still currently in College and it might take a while for some fixes and/or features to be included !
