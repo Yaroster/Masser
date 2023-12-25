@@ -7,25 +7,25 @@ import yaroster.masser.stockers.Gamer;
 
 // This class listens for plugin messages related to a player's money.
 public class ChannelMoney implements PluginMessageListener {
-	Masser main;
+    Masser main;
 
-	// Constructor: Initializes with a reference to the main plugin class.
-	public ChannelMoney(Masser main) {
-		this.main = main;
-	}
+    // Constructor: Initializes with a reference to the main plugin class.
+    public ChannelMoney(Masser main) {
+        this.main = main;
+    }
 
-	// Method called when a plugin message is received.
-	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-		Gamer gamer = this.main.getGamer(player.getName(), true); // Get the Gamer instance for the player.
+    // Method called when a plugin message is received.
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        Gamer gamer = this.main.getGamer(player.getName(), true); // Get the Gamer instance for the player.
 
-		// Check if the gamer is in prison.
-		if (!gamer.isPrison()) {
-			// If not in prison, send data about the gamer's money.
-			gamer.sendData("money", "%" + Integer.toString(gamer.information.money));
-			return;
-		}
+        // Check if the gamer is in prison.
+        if (!gamer.isPrison()) {
+            // If not in prison, send data about the gamer's money.
+            gamer.sendData("money", "%" + gamer.information.money);
+            return;
+        }
 
-		// If the gamer is in prison, send data about the time left in prison.
-		gamer.sendData("money", "#" + Integer.toString(gamer.information.prisonLeft));
-	}
+        // If the gamer is in prison, send data about the time left in prison.
+        gamer.sendData("money", "#" + gamer.information.prisonLeft);
+    }
 }
