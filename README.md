@@ -8,7 +8,7 @@ This project is still in very early developpment stages ! But we are excited to 
 
 ## Updated Tech Stack
 
-- **Java & Spigot 1.20.***
+- **Java & Bukkit 1.20.***
 - **PHP & MySQL**
 - **Inspired by [@torshid](https://github.com/torshid):** The creative force behind the original Turkraft server.
 
