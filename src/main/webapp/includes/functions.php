@@ -1,4 +1,5 @@
 <?php
+
 class Functions
 {
     private $Page;
@@ -210,7 +211,7 @@ class Functions
 
         $Seconds = ceil($DivisorSecond);
 
-        $Values = array("h" => (int) $Hours, "m" => (int) $Minutes, "s" => (int) $Seconds);
+        $Values = array("h" => (int)$Hours, "m" => (int)$Minutes, "s" => (int)$Seconds);
 
         return $Values;
     }
