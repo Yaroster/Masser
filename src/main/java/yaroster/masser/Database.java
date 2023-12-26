@@ -155,13 +155,15 @@ public class Database {
         // Information(2) = pas enregistrer
         // Information(3) = erreur interne
         try {
+            // Retrieve the connection from MySQL class
+            Connection connection = this.connection.getConnection();
+
             // Create a Statement
-            Statement statement = this.connection.getSqlConnection().createStatement(); // Use getSqlConnection() to access the underlying Connection
+            Statement statement = connection.createStatement();
 
             // Execute the SQL query
             String sql = "SELECT * FROM accounts WHERE upper(name) = '" + name.toUpperCase() + "'";
             ResultSet queryResult = statement.executeQuery(sql);
-
             // Check if ResultSet is empty
             if (!queryResult.next()) {
                 this.main.log.information("Non-existent player trying to login: " + name);

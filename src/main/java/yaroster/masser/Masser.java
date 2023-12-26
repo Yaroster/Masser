@@ -274,6 +274,7 @@ public class Masser extends JavaPlugin {
         this.groups = new Hashtable<Integer, Group>();
 
         this.gamers = new Hashtable<String, Gamer>();
+        System.out.println("Gamers: " + gamers);
 
         //--> charger normalement depuis la bdd
         this.genres = this.database.getGenres();

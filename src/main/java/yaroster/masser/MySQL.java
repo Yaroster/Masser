@@ -43,6 +43,9 @@ public class MySQL {
             this.log.error("Impossible to connect MySQL server with configuration: " + this.connectionState + ", stack trace: " + ex);
         }
     }
+    public Connection getConnection() {
+        return sqlConnection;
+    }
 
     public boolean ExecuteInsert(String Query) {
         this.CheckConnection("INSERT error with query: " + Query);
