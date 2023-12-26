@@ -27,6 +27,10 @@ public class Database {
                 this.main.constants.get("mysql.login"), this.main.constants.get("mysql.password"));
     }
 
+    // Au fait, les constantes étaient originellement censée être stockée dans un fichier de configuration,
+    // Ici, je vais me permettre de simplement expliciter mes valeurs actuelles. Celles-ci seront mises à jour
+    // au fur et à mesure que je les trouverai.
+
     public void setServerOnline() {
         this.setServerStatus(1);
     }
