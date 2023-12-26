@@ -72,13 +72,14 @@ public class MySQL {
         this.CheckConnection("SELECT error with query: " + Query);
 
         try {
-            return this.sqlStatement.executeQuery(Query);
+            Statement statement = sqlConnection.createStatement();
+            return statement.executeQuery(Query);
         } catch (SQLException ex) {
             this.log.error("SELECT error with query: " + Query + ", stack trace: " + ex);
-
             return null;
         }
     }
+
 
     public int ExecuteDelete(String Query) {
         this.CheckConnection("DELETE error with query: " + Query);

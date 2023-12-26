@@ -117,6 +117,8 @@ public class Masser extends JavaPlugin {
 
     public boolean sanguine;
 
+
+
     //quand le plugin demarre
     public void onEnable() {
         this.refuseConnections = true;
@@ -213,7 +215,7 @@ public class Masser extends JavaPlugin {
 
     //charger les languages
     public void loadRimes() {
-        this.rimes = this.database.getRimes();
+//        this.rimes = this.database.getRimes();
     }
 
     //charger les ips bannis
@@ -328,17 +330,18 @@ public class Masser extends JavaPlugin {
         new Thread(this.networker).start();
         //<--
 
-        new Rimer(this).start();
-
-        Messenger messenger = this.getServer().getMessenger();
-
-        messenger.registerOutgoingPluginChannel(this, "money");
-
-        messenger.registerOutgoingPluginChannel(this, "sanguine");
-
-        messenger.registerIncomingPluginChannel(this, "money", new ChannelMoney(this));
-
-        messenger.registerIncomingPluginChannel(this, "modify", new ChannelModify(this));
+//        new Rimer(this).start();
+//
+//        Messenger messenger = this.getServer().getMessenger();
+//
+//        messenger.registerOutgoingPluginChannel(this, "money");
+//
+//        messenger.registerOutgoingPluginChannel(this, "sanguine");
+//
+//        messenger.registerIncomingPluginChannel(this, "money", new ChannelMoney(this));
+//
+//        messenger.registerIncomingPluginChannel(this, "modify", new ChannelModify(this));
+        //TODO: A décommenter quand le plugin sera terminé
 
         this.startTimeChecker();
 
@@ -907,19 +910,31 @@ public class Masser extends JavaPlugin {
     }
 
     //retourne un joueur a partir de son nom
-    public Gamer getGamer(String Name, boolean ignoreCase) {
-        if (!ignoreCase) {
-            return this.gamers.get(Name);
+    public Gamer getGamer(String name, boolean ignoreCase) {
+        // Vérifie si la map 'gamers' est initialisée et non vide
+        if (gamers == null || gamers.isEmpty()) {
+            System.out.println("La map 'gamers' est vide ou non initialisée.");
+            return null;
         }
 
-        for (Map.Entry<String, Gamer> entry : this.gamers.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(Name)) {
+        // Si ignoreCase est faux, on utilise la recherche directe
+        if (!ignoreCase) {
+            return gamers.get(name);
+        }
+
+        // Si ignoreCase est vrai, on effectue une recherche insensible à la casse
+        for (Map.Entry<String, Gamer> entry : gamers.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(name)) {
                 return entry.getValue();
             }
         }
 
+        // Si aucun joueur trouvé, retourne null
+        System.out.println("Joueur '" + name + "' non trouvé.");
         return null;
     }
+
+
 
     public String getText(int language, String abbreviation) {
         return this.getText(language, abbreviation, ChatColor.WHITE);

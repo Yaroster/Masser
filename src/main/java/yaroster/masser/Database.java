@@ -10,10 +10,18 @@ import yaroster.masser.stockers.*;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
+//importing JDBC packages
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 
 public class Database {
     private Masser main;
@@ -26,10 +34,6 @@ public class Database {
         this.connection = new MySQL(this.main.log, this.main.constants.get("mysql.host"), this.main.constants.get("mysql.base"),
                 this.main.constants.get("mysql.login"), this.main.constants.get("mysql.password"));
     }
-
-    // Au fait, les constantes étaient originellement censée être stockée dans un fichier de configuration,
-    // Ici, je vais me permettre de simplement expliciter mes valeurs actuelles. Celles-ci seront mises à jour
-    // au fur et à mesure que je les trouverai.
 
     public void setServerOnline() {
         this.setServerStatus(1);
@@ -148,36 +152,58 @@ public class Database {
     }
 
     public Information getPlayerInformation(String name) {
-        //information(2) = pas enregistrer
-        //information(3) = erreur interne
-
-        ResultSet queryResult = this.connection.ExecuteSelect("SELECT * FROM accounts WHERE upper(name) = '" + name.toUpperCase() + "'");
-
-        if (queryResult == null) {
-            this.main.log.information("Not existant player trying to login: " + name);
-
-            return new Information(2);
-        }
-
+        // Information(2) = pas enregistrer
+        // Information(3) = erreur interne
         try {
-            if (!queryResult.first()) {
-                this.main.log.information("Not existant player trying to login: " + name);
+            // Create a Statement
+            Statement statement = this.connection.getSqlConnection().createStatement(); // Use getSqlConnection() to access the underlying Connection
 
+            // Execute the SQL query
+            String sql = "SELECT * FROM accounts WHERE upper(name) = '" + name.toUpperCase() + "'";
+            ResultSet queryResult = statement.executeQuery(sql);
+
+            // Check if ResultSet is empty
+            if (!queryResult.next()) {
+                this.main.log.information("Non-existent player trying to login: " + name);
                 return new Information(2);
             }
 
-            return new Information(queryResult.getInt("id"), queryResult.getString("name"), queryResult.getInt("language"), queryResult.getBoolean("white"),
-                    queryResult.getBoolean("banned"), queryResult.getBoolean("session"), queryResult.getInt("money"),
-                    queryResult.getInt("mill"), queryResult.getInt("hill"), queryResult.getInt("mie"), queryResult.getInt("hie"), queryResult.getInt("nie"),
-                    queryResult.getInt("clan"), queryResult.getInt("grad"), queryResult.getInt("playmin"), queryResult.getLong("lastDamage"), queryResult.getInt("combatCounter"),
-                    queryResult.getInt("class"), queryResult.getInt("clanRank"), queryResult.getInt("prisonLeft"), queryResult.getInt("prisonIn"), queryResult.getInt("prisonCount"),
-                    queryResult.getLong("playableMinutes"), queryResult.getLong("playedMinutes"), queryResult.getDate("exition"), queryResult.getBoolean("muted"));
-        } catch (Exception ex) {
+            // Retrieve data from ResultSet
+            return new Information(
+                    queryResult.getInt("id"),
+                    queryResult.getString("name"),
+                    queryResult.getInt("language"),
+                    queryResult.getBoolean("white"),
+                    queryResult.getBoolean("banned"),
+                    queryResult.getBoolean("session"),
+                    queryResult.getInt("money"),
+                    queryResult.getInt("mill"),
+                    queryResult.getInt("hill"),
+                    queryResult.getInt("mie"),
+                    queryResult.getInt("hie"),
+                    queryResult.getInt("nie"),
+                    queryResult.getInt("clan"),
+                    queryResult.getInt("grad"),
+                    queryResult.getInt("playmin"),
+                    queryResult.getLong("lastDamage"),
+                    queryResult.getInt("combatCounter"),
+                    queryResult.getInt("class"),
+                    queryResult.getInt("clanRank"),
+                    queryResult.getInt("prisonLeft"),
+                    queryResult.getInt("prisonIn"),
+                    queryResult.getInt("prisonCount"),
+                    queryResult.getLong("playableMinutes"),
+                    queryResult.getLong("playedMinutes"),
+                    queryResult.getDate("exition"),
+                    queryResult.getBoolean("muted")
+            );
+        } catch (SQLException ex) {
             this.main.log.error(ex);
-
             return new Information(3);
         }
     }
+
+
 
     public ArrayList<String> getBannedIps() {
         ArrayList<String> bannedIps = new ArrayList<String>();
@@ -237,11 +263,10 @@ public class Database {
         for (int i = 0; i < fields.length; i++) {
             types += fields[i].getName() + ",";
         }
-
         types = types.substring(0, types.length() - 1);
 
         ResultSet queryResult = this.connection.ExecuteSelect("SELECT " + types + " FROM grad");
-
+        System.out.println("SELECT " + types + " FROM grad");
         try {
             while (queryResult.next()) {
                 Grad grad = new Grad();

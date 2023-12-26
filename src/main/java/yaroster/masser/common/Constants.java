@@ -13,24 +13,30 @@ public class Constants {
 
     // Constructor: Initializes the logger and reads constants from the specified file.
     public Constants(Logs log, String fileName) {
-        this.log = log; // Set the logger.
-        this.values = new Hashtable<String, String>(); // Initialize the map.
+        this.log = log;
+        this.values = new Hashtable<>();
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(fileName)); // Open file for reading.
-
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line;
 
-            while ((line = reader.readLine()) != null) { // Read each line of the file.
-                String[] parse = line.split("="); // Split line into key-value pair.
-                values.put(parse[0], parse[1]); // Store the pair in the map.
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().isEmpty()) { // Vérifier que la ligne n'est pas vide
+                    String[] parse = line.split("=", 2); // Diviser en deux parties maximum
+                    if (parse.length == 2) {
+                        values.put(parse[0].trim(), parse[1].trim()); // Ajouter la clé et la valeur à la map
+                    } else {
+                        log.error("Ligne mal formatée dans le fichier de constants : " + line);
+                    }
+                }
             }
 
-            reader.close(); // Close the file reader.
+            reader.close();
         } catch (IOException ex) {
-            this.log.error("Reading variables file from name " + fileName + ", stack trace: " + ex); // Log any IO exceptions.
+            log.error("Erreur de lecture du fichier de constants '" + fileName + "': " + ex.getMessage());
         }
     }
+
 
     // Method to get a value for a given key.
     public String get(String variable) {
