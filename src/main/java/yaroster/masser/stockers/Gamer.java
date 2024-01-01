@@ -76,6 +76,8 @@ public class Gamer {
         return this.grad.color + this.information.name;
     }
 
+
+
     public String getNameColorPersonnalized() {
         return this.getNameColorPersonnalized(ChatColor.WHITE);
     }

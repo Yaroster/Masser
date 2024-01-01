@@ -268,7 +268,6 @@ public class Database {
         types = types.substring(0, types.length() - 1);
 
         ResultSet queryResult = this.connection.ExecuteSelect("SELECT " + types + " FROM grad");
-        System.out.println("SELECT " + types + " FROM grad");
         try {
             while (queryResult.next()) {
                 Grad grad = new Grad();

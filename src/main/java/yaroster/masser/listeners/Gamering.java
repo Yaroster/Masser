@@ -34,159 +34,198 @@ public class Gamering extends Listening {
         super(main);
     }
 
-    @SuppressWarnings("deprecation")
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onLogin(PlayerLoginEvent event) {
-        if (!Masser.noError) {
-            event.disallow(Result.KICK_OTHER, "Server maintenance.");
 
-            return;
-        }
-
-        String internalError = "Internal error.";
-
-        Information information = this.main.database.getPlayerInformation(event.getPlayer().getName());
-
-        if (information == null) {
-            this.main.log.error("OnPlayerLoginEvent, information == true = true");
-
-            event.disallow(Result.KICK_OTHER, internalError);
-
-            return;
-        }
-
-        if (information.status == -1) {
-            this.main.log.error("OnPlayerLoginEvent, informations.status == -1 = true");
-
-            event.disallow(Result.KICK_OTHER, internalError);
-
-            return;
-        }
-
-        if (information.status == 1) {
-            if (this.main.refuseConnections) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.busy"));
-
-                return;
-            }
-
-            if (this.main.isRestarting) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.restarting"));
-
-                return;
-            }
-
-            if (!this.main.configuration.acceptConnections) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.refuse"));
-
-                return;
-            }
-
-            if (information.banned) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.banned"));
-
-                return;
-            }
-
-            if (!information.session && this.main.configuration.checkSession) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.nosession"));
-
-                return;
-            }
-
-            if (!information.white && this.main.configuration.whiteList) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.whitelist"));
-
-                return;
-            }
-
-            if (this.main.isBannedIp(event.getAddress())) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.banned"));
-
-                return;
-            }
-
-            if (this.main.isConnected(information.name, true)) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.alreadyconnected"));
-
-                return;
-            }
-
-            if (information.genre == 0) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.noclass"));
-
-                return;
-            }
-
-            Gamer gamer = new Gamer(this.main, event.getPlayer(), information);
-
-            if (!gamer.grad.canConnect) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.noconnection"));
-
-                return;
-            }
-
-			/*if (!gamer.canLogAfterCombat())
-			{
-				event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.combat"));
-
-				return;
-			}*/
-
-            if (!gamer.grad.canMultiIP) {
-                if (this.main.isIPConnected(event.getAddress().getHostAddress())) {
-                    event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.nomultiip"));
-
-                    return;
-                }
-            }
-
-            if (gamer.information.exition == null || Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != gamer.information.exition.getDate()) {
-                gamer.information.playedMinutes = 0;
-            }
-
-            if (gamer.information.playedMinutes >= gamer.information.playableMinutes && gamer.information.playableMinutes > 0) {
-                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.time.elapsed"));
-
-                return;
-            }
-
-            this.main.addGamer(gamer);
-
-            this.main.database.setGamerConnected(gamer.information.id);
-
-            return;
-        }
-
-        switch (information.status) {
-            case 2:
-                event.disallow(Result.KICK_OTHER, "Please register on the website!");
-                break;
-            case 3:
-                this.main.log.error("OnPlayerLoginEvent, case 3 switch (informations.status)");
-
-                event.disallow(Result.KICK_OTHER, internalError);
-                break;
-            default:
-                this.main.log.error("OnPlayerLoginEvent, default switch (informations.status)");
-
-                event.disallow(Result.KICK_OTHER, internalError);
-                break;
-        }
-    }
+    //TODO: Gerer la connexion des joueurs dépendament du site web.
+//    @EventHandler(priority = EventPriority.NORMAL)
+//    public void onLogin(PlayerLoginEvent event) {
+//        if (!Masser.noError) {
+//            event.disallow(Result.KICK_OTHER, "Server maintenance.");
+//
+//            return;
+//        }
+//
+//        String internalError = "Internal error.";
+//
+//        Information information = this.main.database.getPlayerInformation(event.getPlayer().getName());
+//
+//        if (information == null) {
+//            this.main.log.error("OnPlayerLoginEvent, information == true = true");
+//
+//            event.disallow(Result.KICK_OTHER, internalError);
+//
+//            return;
+//        }
+//
+//        if (information.status == -1) {
+//            this.main.log.error("OnPlayerLoginEvent, informations.status == -1 = true");
+//
+//            event.disallow(Result.KICK_OTHER, internalError);
+//
+//            return;
+//        }
+//
+//        if (information.status == 1) {
+//            if (this.main.refuseConnections) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.busy"));
+//
+//                return;
+//            }
+//
+//            if (this.main.isRestarting) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.restarting"));
+//
+//                return;
+//            }
+//
+//            if (!this.main.configuration.acceptConnections) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.refuse"));
+//
+//                return;
+//            }
+//
+//            if (information.banned) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.banned"));
+//
+//                return;
+//            }
+//
+//            if (!information.session && this.main.configuration.checkSession) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.nosession"));
+//
+//                return;
+//            }
+//
+//            if (!information.white && this.main.configuration.whiteList) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.whitelist"));
+//
+//                return;
+//            }
+//
+//            if (this.main.isBannedIp(event.getAddress())) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.banned"));
+//
+//                return;
+//            }
+//
+//            if (this.main.isConnected(information.name, true)) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.alreadyconnected"));
+//
+//                return;
+//            }
+//
+//            if (information.genre == 0) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.noclass"));
+//
+//                return;
+//            }
+//
+//            Gamer gamer = new Gamer(this.main, event.getPlayer(), information);
+//
+//            if (!gamer.grad.canConnect) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.noconnection"));
+//
+//                return;
+//            }
+//
+//			/*if (!gamer.canLogAfterCombat())
+//			{
+//				event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.combat"));
+//
+//				return;
+//			}*/
+//
+//            if (!gamer.grad.canMultiIP) {
+//                if (this.main.isIPConnected(event.getAddress().getHostAddress())) {
+//                    event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.nomultiip"));
+//
+//                    return;
+//                }
+//            }
+//
+//            if (gamer.information.exition == null || Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != gamer.information.exition.getDate()) {
+//                gamer.information.playedMinutes = 0;
+//            }
+//
+//            if (gamer.information.playedMinutes >= gamer.information.playableMinutes && gamer.information.playableMinutes > 0) {
+//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.time.elapsed"));
+//
+//                return;
+//            }
+//
+//
+//            this.main.addGamer(gamer);
+//            System.out.println("Login works, gamer added to main: ");
+//            System.out.println(gamer.information.name);
+//            this.main.database.setGamerConnected(gamer.information.id);
+//
+//            return;
+//        }
+//
+//        switch (information.status) {
+//            case 2:
+//                event.disallow(Result.KICK_OTHER, "Please register on the website!");
+//                break;
+//            case 3:
+//                this.main.log.error("OnPlayerLoginEvent, case 3 switch (informations.status)");
+//
+//                event.disallow(Result.KICK_OTHER, internalError);
+//                break;
+//            default:
+//                this.main.log.error("OnPlayerLoginEvent, default switch (informations.status)");
+//
+//                event.disallow(Result.KICK_OTHER, internalError);
+//                break;
+//        }
+//    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(PlayerJoinEvent event) {
-        event.setJoinMessage(null);
+        Player player = event.getPlayer();
+        String playerName = player.getName();
+        Information playerInfo = this.main.database.getPlayerInformation(playerName);
 
-        Gamer gamer = this.main.getGamer(event.getPlayer().getName(), true);
+        // Use getGamer method to retrieve or create a Gamer object
+        if (main.gamers.get(playerName) == null) {
+            if (playerInfo == null) {
+                main.addGamer(new Gamer(main, player, new Information(1)));
+            } else {
+                main.addGamer(new Gamer(main, player, playerInfo));
+            }
 
-        gamer.initialize();
-
-        if (event.getPlayer().hasPlayedBefore()) {
-            this.main.broadcastTextAbbrev("join.message", ChatColor.DARK_GREEN, gamer.getNameColor());
         } else {
-            this.main.broadcastTextAbbrev("join.firsttime", ChatColor.DARK_GREEN, gamer.getNameColor());
+            Gamer gamer = this.main.getGamer(playerName, false);
+            main.addGamer(gamer);
+
+            if (gamer == null) {
+                if (playerInfo == null) {
+                    // Handle null player information appropriately
+                    System.out.println("Player information for " + playerName + " is not available.");
+                    return;
+                }
+                gamer = new Gamer(main, player, playerInfo);
+                this.main.gamers.put(playerName, gamer);
+            }
+
+            // Add Gamer to main, if not already added
+            if (!main.containsGamer(gamer)) {
+                main.addGamer(gamer);
+            }
+
+            System.out.println(gamer);
+            System.out.println("Gamer added to main: " + gamer.information.name);
+
+            // Initialize or update the gamer's state
+            gamer.initialize();
+
+            // Set a custom join message
+            event.setJoinMessage("Welcome to Masser, " + playerName + "!");
+
+            // Broadcast different messages for new and returning players
+            if (player.hasPlayedBefore()) {
+                this.main.broadcastTextAbbrev("join.message", ChatColor.DARK_GREEN, gamer.getNameColor(), playerName);
+            } else {
+                this.main.broadcastTextAbbrev("join.firsttime", ChatColor.DARK_GREEN, gamer.getNameColor(), playerName);
+            }
         }
     }
 

@@ -1,9 +1,6 @@
 package yaroster.masser;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -21,15 +18,12 @@ import yaroster.masser.stockers.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 public class Masser extends JavaPlugin {
     public static String VERSION = "0.4.2";
 
-    private Map<String, Gamer> gamers;
+    public Map<String, Gamer> gamers;
     private final Player[] players = getServer().getOnlinePlayers().toArray(new Player[0]);
     public Map<Location, Shop> shops;
 
@@ -244,6 +238,8 @@ public class Masser extends JavaPlugin {
 
         new Servering(this);
 
+        System.out.println("The server is initialised");
+
         this.listenerGamer = new Gamering(this);
 
         this.monstering = new Monstering(this);
@@ -274,7 +270,9 @@ public class Masser extends JavaPlugin {
         this.groups = new Hashtable<Integer, Group>();
 
         this.gamers = new Hashtable<String, Gamer>();
-        System.out.println("Gamers: " + gamers);
+//        System.out.println("Gamers pre-init: " + gamers);
+//        this.gamers.put("Yaroster", new Gamer(this, this.getServer().getPlayer("Yaroster"), new Information(144, "Yaroster", 1, true, false, true, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, new Date(), false)));
+//        System.out.println("Gamers post-init: " + gamers);
 
         //--> charger normalement depuis la bdd
         this.genres = this.database.getGenres();
@@ -910,30 +908,56 @@ public class Masser extends JavaPlugin {
         return this.gamers.size();
     }
 
+    public boolean containsGamer(Gamer gamer) {
+        return this.gamers.containsKey(gamer);
+    }
+
     //retourne un joueur a partir de son nom
     public Gamer getGamer(String name, boolean ignoreCase) {
-        // Vérifie si la map 'gamers' est initialisée et non vide
-        if (gamers == null || gamers.isEmpty()) {
-            System.out.println("La map 'gamers' est vide ou non initialisée.");
-            return null;
-        }
+        // Check if the gamers map is initialized and not empty
 
-        // Si ignoreCase est faux, on utilise la recherche directe
-        if (!ignoreCase) {
+        if (gamers == null) {
+            System.out.println("La map 'gamers' est vide ou non initialisée.");
+            addGamer(new Gamer(this, getServer().getPlayer(name), this.database.getPlayerInformation(name)));
             return gamers.get(name);
         }
 
-        // Si ignoreCase est vrai, on effectue une recherche insensible à la casse
-        for (Map.Entry<String, Gamer> entry : gamers.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(name)) {
-                return entry.getValue();
+        Gamer gamer = gamers.get(name); //WHY THE FUCK WAS THIS EVER DEFINED AS NULL BEFORE !??!?!?!?!?!?!?!?!
+
+        // If ignoreCase is false, use direct search
+        if (!ignoreCase) {
+            gamer = gamers.get(name);
+        } else {
+            // If ignoreCase is true, perform a case-insensitive search
+            for (Map.Entry<String, Gamer> entry : gamers.entrySet()) {
+                if (entry.getKey().equalsIgnoreCase(name)) {
+                    gamer = entry.getValue();
+                    break;
+                }
             }
         }
 
-        // Si aucun joueur trouvé, retourne null
-        System.out.println("Joueur '" + name + "' non trouvé.");
-        return null;
+        // Create and add a new Gamer if not found
+        if (gamer == null) {
+            Player player = Bukkit.getServer().getPlayerExact(name);
+            if (player == null) {
+                System.out.println("Player '" + name + "' not found or not online.");
+                return null;
+            }
+
+            Information playerInfo = this.database.getPlayerInformation(name);
+            if (playerInfo == null) {
+                System.out.println("Player information for '" + name + "' is not available.");
+                return null;
+            }
+
+            gamer = new Gamer(this, player, playerInfo);
+            gamers.put(name, gamer);
+        }
+
+        return gamer;
     }
+
 
 
 
@@ -976,6 +1000,7 @@ public class Masser extends JavaPlugin {
 
             return text;
         }
+
 
         this.log.error("Texte non existant pour la langue " + language + " et " + this.configuration.defaultLanguage + " (defaut) pour l'abbreviation " + abbreviation);
 
@@ -1028,13 +1053,13 @@ public class Masser extends JavaPlugin {
 
     //ajoute un element gamer a la liste des connectes
     public void addGamer(Gamer gamer) {
-        if (this.gamers.containsKey(gamer.information.name)) {
+        System.out.println("addGamer: On ajoute le joueur : " + gamer.information.name + " à la liste des connectés.");
+        if (this.gamers.containsKey(gamer.source.getName())) {
             this.log.error("Nom du joueur deja present dans la liste pour l'ajouter!");
-
             return;
         }
 
-        this.gamers.put(gamer.information.name, gamer);
+        this.gamers.put(gamer.source.getName(), gamer);
     }
 
     //enleve un joueur a partir de son nom
@@ -1079,7 +1104,8 @@ public class Masser extends JavaPlugin {
                 Gamer sayer = this.getGamer(args[0], true);
 
                 if (sayer == null) {
-                    sender.sendMessage(this.getText(this.configuration.defaultLanguage, "general.notconnected", this.colors.money, args[0]));
+//                    sender.sendMessage(this.getText(this.configuration.defaultLanguage, "general.notconnected", this.colors.money, args[0]));
+                    sender.sendMessage("ça marche pas lol");
 
                     return true;
                 }
@@ -1169,6 +1195,7 @@ public class Masser extends JavaPlugin {
     }
 
     public Language[] getLanguages() {
+        System.out.println("Languages: " + Arrays.toString(this.languages.values().toArray(new Language[]{})));
         return this.languages.values().toArray(new Language[]{});
     }
 
