@@ -12,6 +12,8 @@ evolution of our community.
 This project is still in very early developpment stages ! But we are excited to show our advancement as we progress
 towards release.
 
+N.B: As I am currently still in University, there might be important/unpredictible delays between releases !
+
 ## Updated Tech Stack
 
 - **Java & Bukkit 1.20.***
