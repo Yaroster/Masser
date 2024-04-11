@@ -34,149 +34,148 @@ public class Gamering extends Listening {
         super(main);
     }
 
-
     //TODO: Gerer la connexion des joueurs dépendament du site web.
-//    @EventHandler(priority = EventPriority.NORMAL)
-//    public void onLogin(PlayerLoginEvent event) {
-//        if (!Masser.noError) {
-//            event.disallow(Result.KICK_OTHER, "Server maintenance.");
-//
-//            return;
-//        }
-//
-//        String internalError = "Internal error.";
-//
-//        Information information = this.main.database.getPlayerInformation(event.getPlayer().getName());
-//
-//        if (information == null) {
-//            this.main.log.error("OnPlayerLoginEvent, information == true = true");
-//
-//            event.disallow(Result.KICK_OTHER, internalError);
-//
-//            return;
-//        }
-//
-//        if (information.status == -1) {
-//            this.main.log.error("OnPlayerLoginEvent, informations.status == -1 = true");
-//
-//            event.disallow(Result.KICK_OTHER, internalError);
-//
-//            return;
-//        }
-//
-//        if (information.status == 1) {
-//            if (this.main.refuseConnections) {
-//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.busy"));
-//
-//                return;
-//            }
-//
-//            if (this.main.isRestarting) {
-//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.restarting"));
-//
-//                return;
-//            }
-//
-//            if (!this.main.configuration.acceptConnections) {
-//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.refuse"));
-//
-//                return;
-//            }
-//
-//            if (information.banned) {
-//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.banned"));
-//
-//                return;
-//            }
-//
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onLogin(PlayerLoginEvent event) {
+        if (!Masser.noError) {
+            event.disallow(Result.KICK_OTHER, "Server maintenance.");
+
+            return;
+        }
+
+        String internalError = "Internal error.";
+
+        Information information = this.main.database.getPlayerInformation(event.getPlayer().getName());
+
+        if (information == null) {
+            this.main.log.error("OnPlayerLoginEvent, information == true = true");
+
+            event.disallow(Result.KICK_OTHER, internalError);
+
+            return;
+        }
+
+        if (information.status == -1) {
+            this.main.log.error("OnPlayerLoginEvent, informations.status == -1 = true");
+
+            event.disallow(Result.KICK_OTHER, internalError);
+
+            return;
+        }
+
+        if (information.status == 1) {
+            if (this.main.refuseConnections) {
+                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.busy"));
+
+                return;
+            }
+
+            if (this.main.isRestarting) {
+                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.restarting"));
+
+                return;
+            }
+
+            if (!this.main.configuration.acceptConnections) {
+                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.refuse"));
+
+                return;
+            }
+
+            if (information.banned) {
+                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.banned"));
+
+                return;
+            }
+
 //            if (!information.session && this.main.configuration.checkSession) {
 //                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.nosession"));
 //
 //                return;
 //            }
-//
-//            if (!information.white && this.main.configuration.whiteList) {
-//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.whitelist"));
-//
-//                return;
-//            }
-//
-//            if (this.main.isBannedIp(event.getAddress())) {
-//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.banned"));
-//
-//                return;
-//            }
-//
-//            if (this.main.isConnected(information.name, true)) {
-//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.alreadyconnected"));
-//
-//                return;
-//            }
-//
+
+            if (!information.white && this.main.configuration.whiteList) {
+                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.server.whitelist"));
+
+                return;
+            }
+
+            if (this.main.isBannedIp(event.getAddress())) {
+                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.banned"));
+
+                return;
+            }
+
+            if (this.main.isConnected(information.name, true)) {
+                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.alreadyconnected"));
+
+                return;
+            }
+
 //            if (information.genre == 0) {
 //                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.player.noclass"));
 //
 //                return;
 //            }
-//
-//            Gamer gamer = new Gamer(this.main, event.getPlayer(), information);
-//
+
+            Gamer gamer = new Gamer(this.main, event.getPlayer(), information);
+
 //            if (!gamer.grad.canConnect) {
 //                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.noconnection"));
 //
 //                return;
 //            }
-//
-//			/*if (!gamer.canLogAfterCombat())
-//			{
-//				event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.combat"));
-//
-//				return;
-//			}*/
-//
-//            if (!gamer.grad.canMultiIP) {
-//                if (this.main.isIPConnected(event.getAddress().getHostAddress())) {
-//                    event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.nomultiip"));
-//
-//                    return;
-//                }
-//            }
-//
-//            if (gamer.information.exition == null || Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != gamer.information.exition.getDate()) {
-//                gamer.information.playedMinutes = 0;
-//            }
-//
-//            if (gamer.information.playedMinutes >= gamer.information.playableMinutes && gamer.information.playableMinutes > 0) {
-//                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.time.elapsed"));
-//
-//                return;
-//            }
-//
-//
-//            this.main.addGamer(gamer);
-//            System.out.println("Login works, gamer added to main: ");
-//            System.out.println(gamer.information.name);
-//            this.main.database.setGamerConnected(gamer.information.id);
-//
-//            return;
-//        }
-//
-//        switch (information.status) {
-//            case 2:
-//                event.disallow(Result.KICK_OTHER, "Please register on the website!");
-//                break;
-//            case 3:
-//                this.main.log.error("OnPlayerLoginEvent, case 3 switch (informations.status)");
-//
-//                event.disallow(Result.KICK_OTHER, internalError);
-//                break;
-//            default:
-//                this.main.log.error("OnPlayerLoginEvent, default switch (informations.status)");
-//
-//                event.disallow(Result.KICK_OTHER, internalError);
-//                break;
-//        }
-//    }
+
+			/*if (!gamer.canLogAfterCombat())
+			{
+				event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.combat"));
+
+				return;
+			}*/
+
+            if (!gamer.grad.canMultiIP) {
+                if (this.main.isIPConnected(event.getAddress().getHostAddress())) {
+                    event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.grad.nomultiip"));
+
+                    return;
+                }
+            }
+
+            if (gamer.information.exition == null || Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != gamer.information.exition.getDate()) {
+                gamer.information.playedMinutes = 0;
+            }
+
+            if (gamer.information.playedMinutes >= gamer.information.playableMinutes && gamer.information.playableMinutes > 0) {
+                event.disallow(Result.KICK_OTHER, this.main.getText(information.language, "nologin.time.elapsed"));
+
+                return;
+            }
+
+
+            this.main.addGamer(gamer);
+            System.out.println("Login works, gamer added to main: ");
+            System.out.println(gamer.information.name);
+            this.main.database.setGamerConnected(gamer.information.id);
+
+            return;
+        }
+
+        switch (information.status) {
+            case 2:
+                event.disallow(Result.KICK_OTHER, "Please register on the website!");
+                break;
+            case 3:
+                this.main.log.error("OnPlayerLoginEvent, case 3 switch (informations.status)");
+
+                event.disallow(Result.KICK_OTHER, internalError);
+                break;
+            default:
+                this.main.log.error("OnPlayerLoginEvent, default switch (informations.status)");
+
+                event.disallow(Result.KICK_OTHER, internalError);
+                break;
+        }
+    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(PlayerJoinEvent event) {
@@ -194,7 +193,6 @@ public class Gamering extends Listening {
 
         } else {
             Gamer gamer = this.main.getGamer(playerName, false);
-            main.addGamer(gamer);
 
             if (gamer == null) {
                 if (playerInfo == null) {
@@ -205,14 +203,6 @@ public class Gamering extends Listening {
                 gamer = new Gamer(main, player, playerInfo);
                 this.main.gamers.put(playerName, gamer);
             }
-
-            // Add Gamer to main, if not already added
-            if (!main.containsGamer(gamer)) {
-                main.addGamer(gamer);
-            }
-
-            System.out.println(gamer);
-            System.out.println("Gamer added to main: " + gamer.information.name);
 
             // Initialize or update the gamer's state
             gamer.initialize();
@@ -498,7 +488,6 @@ public class Gamering extends Listening {
             return;
         }
     }
-
     private boolean canBeInteracted(Material material) {
         return material == Material.CHEST || material == Material.CRAFTING_TABLE || material == Material.FURNACE
                 || material == Material.OAK_DOOR || material == Material.RED_BED || material == Material.OAK_BOAT
@@ -1079,7 +1068,6 @@ public class Gamering extends Listening {
             return;
         }
     }
-
     public commandState onCommand(Gamer gamer, String label, String[] args) {
         if (gamer == null) {
             return commandState.Accepted;
@@ -1095,6 +1083,7 @@ public class Gamering extends Listening {
 
         if (label.equalsIgnoreCase("invisiblehelp")) {
             gamer.sendMessage("command.help", this.main.colors.diverse);
+            System.out.println(gamer.getClan());
 
             return commandState.Accepted;
         }
@@ -3009,7 +2998,7 @@ public class Gamering extends Listening {
                 if (gamer.information.money < price) {
                     gamer.sendMessage("command.clan.create.nomoney", this.main.colors.clan,
                             Integer.toString(price));
-
+                    System.out.println("You have no money to create a clan");
                     newClan.dispose();
 
                     return commandState.Accepted;
@@ -3023,7 +3012,7 @@ public class Gamering extends Listening {
 
                 this.main.broadcastTextAbbrev("command.clan.create.publish", this.main.colors.clan, gamer.getNameColor(), newClan.name, Integer.toString(price));
 
-                //gamer.sendMessage("command.clan.create.created", this.main.colors.clan, newClan.name, Integer.toString(price));
+                gamer.sendMessage("command.clan.create.created", this.main.colors.clan, newClan.name, Integer.toString(price));
 
                 return commandState.Accepted;
             }
@@ -4149,7 +4138,6 @@ public class Gamering extends Listening {
 
         return commandState.Error;
     }
-
     private void simulateGroupExit(Gamer gamer) {
         if (this.main.getGroup(gamer.groupid).isHost(gamer)) {
             Gamer newHostGamer = this.main.getGroup(gamer.groupid).hostOut();
